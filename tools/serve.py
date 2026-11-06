@@ -34,9 +34,10 @@ class Handler(SimpleHTTPRequestHandler):
             return str(root / "sessions" / "view.html")
         if re.fullmatch(r"/sessions/dn-[a-z2-7]{5}/outputs/[0-9]+\.zip", path):
             return str(root / "demo" / "output.zip")
+        # try_files $uri $uri.html $uri/: a file, then the page, then a directory.
         found = super().translate_path(path)
-        if not Path(found).exists() and Path(found + ".html").is_file():
-            return found + ".html"
+        if not Path(found).is_file() and Path(found.rstrip("/") + ".html").is_file():
+            return found.rstrip("/") + ".html"
         return found
 
     def end_headers(self):

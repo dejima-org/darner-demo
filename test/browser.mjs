@@ -89,10 +89,14 @@ try {
   await page.goto(`${base}/sessions/dn-nopes`);
   assert.match(await page.textContent("main"), /never existed here/);
 
-  for (const path of ["/blurbs", "/blurbs/recipe-service", "/configs", "/configs/recipe-service"]) {
+  for (const [path, heading] of [["/blurbs", "Context blurbs"], ["/blurbs/recipe-service", "recipe-service"],
+    ["/configs", "Config sets"], ["/configs/recipe-service", "recipe-service"]]) {
     const response = await page.goto(base + path);
     assert.equal(response.status(), 200, path);
+    assert.match(await page.textContent("main h1"), new RegExp(`^${heading}`), path);
   }
+  await page.goto(`${base}/configs/local`);
+  assert.match(await page.textContent("main"), /Self-hosted Cline session/);
   await shot("8-config");
   assert.deepEqual(problems, []);
   console.log("ok: the demo works end to end");
