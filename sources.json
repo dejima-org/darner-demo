@@ -1,10 +1,17 @@
 {
   "darner": {
-    "version": "0.1.19",
-    "commit": "338c0c3d029f810dd279016de63c1966b4001f6c"
+    "repo": "dejima/darner",
+    "release": null,
+    "ref": "development",
+    "commit": "eaade0c02d8b2bdefc0afa4b4d12ab9047c89902",
+    "captured": "2026-11-06",
+    "version": "0.1.19"
   },
   "dejima": {
+    "repo": "dejima/dejima",
     "release": "2026.11.04",
-    "commit": "420ef481a7c265398277bd4bda87b1ce8aec040c"
+    "ref": null,
+    "commit": "420ef481a7c265398277bd4bda87b1ce8aec040c",
+    "captured": "2026-11-06"
   }
 }

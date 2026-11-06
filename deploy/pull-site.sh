@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Runs on the web host (see dejima-demo-darner-pull.service). Finds the newest
+# Runs on the web host (see dejima-darner-demo-pull.service). Finds the newest
 # successful deploy.yml run for a push to main, downloads its `site` artifact,
 # unpacks it as a new release and atomically points `current` at it. Does
 # nothing if that build is already live.

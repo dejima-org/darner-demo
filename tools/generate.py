@@ -13,6 +13,7 @@ delivers its output and is stopped through the API as a real one is.
 import argparse
 import asyncio
 import contextlib
+import datetime
 import io
 import itertools
 import json
@@ -40,10 +41,10 @@ from darner.web import make_app as make_web  # noqa: E402
 ROOT = Path(__file__).resolve().parent.parent
 SITE = ROOT / "site"
 FIXTURES = ROOT / "test" / "fixtures"
-ORIGIN = "https://demo-darner.dejima.page"
-HOST = {"Host": "demo-darner.dejima.page"}
+ORIGIN = "https://darner-demo.dejima.page"
+HOST = {"Host": "darner-demo.dejima.page"}
 POST = {**HOST, "Origin": ORIGIN, "X-Darner-Request": "1", "Sec-Fetch-Site": "same-origin"}
-TOKEN = "demo-darner-" + "0" * 32
+TOKEN = "darner-demo-" + "0" * 32
 # Every session's id and name in a captured page is one of these, which demo.js
 # replaces with the visitor's.
 ID, NAME = "dn-zzzzz", "example"
@@ -89,9 +90,12 @@ elif cmd[:1] == ["forget"]:
     print(json.dumps({"kept": "its output wasn't delivered whole"}))
 elif cmd[:1] in (["stop"], ["discard"]):
     pass
-else:
+elif not cmd:
     job = json.load(sys.stdin)
     print(json.dumps({"id": job["id"], "target": "darner:" + job["id"]}))
+else:
+    # A command darner added since this stub was written: say so, rather than guess.
+    sys.exit(f"the generator's stub launcher doesn't know {cmd}; teach it what darner-launch answers")
 '''
 
 
@@ -129,9 +133,7 @@ class Demo:
         (work / "stub.py").write_text(STUB)
         os.environ["DEMO_STUB"] = str(self.ctl)
         blurbs = work / "blurbs"
-        blurbs.mkdir()
-        for f in sorted((ROOT / "blurbs").iterdir()):
-            (blurbs / f"{f.name}.md").write_text(f.read_text())
+        shutil.copytree(ROOT / "blurbs", blurbs, dirs_exist_ok=True)
         shutil.copytree(ROOT / "configs", work / "configs")
         shutil.copytree(ROOT / "files", work / "configs" / "files")
         self.config = {
@@ -275,7 +277,7 @@ async def generate(dejima: Path) -> None:
             pages["blurbs"] = await demo.get("/blurbs")
             pages["configs"] = await demo.get("/configs")
             pages["selftest"] = await demo.get("/selftest")
-            blurb_names = sorted(f.name for f in (ROOT / "blurbs").iterdir())
+            blurb_names = sorted(f.stem for f in (ROOT / "blurbs").glob("*.md"))
             config_names = configsets.available(work / "configs")
             for name in blurb_names:
                 pages[f"blurbs/{name}"] = await demo.get(f"/blurbs/{name}")
@@ -335,7 +337,7 @@ async def generate(dejima: Path) -> None:
     data = {
         "id": ID, "name": NAME,
         "labels": SETTING_LABELS, "started_with": list(api.STARTED_WITH), "singles": list(configsets.SINGLES),
-        "sets": sets, "blurbs": {n: (ROOT / "blurbs" / n).read_text() for n in blurb_names},
+        "sets": sets, "blurbs": {n: (ROOT / "blurbs" / f"{n}.md").read_text() for n in blurb_names},
         "session_name": api.SESSION_NAME.pattern, "name_rule": api.NAME_RULE,
         "domain": job._DOMAIN.pattern, "dependency": job._DEP.pattern, "tarball": job._TARBALL.pattern,
         "effort": job._EFFORT.pattern, "context_window": [job.CONTEXT_WINDOW.start, job.CONTEXT_WINDOW.stop - 1],
@@ -370,11 +372,23 @@ async def generate(dejima: Path) -> None:
     (FIXTURES / "previews.json").write_text(json.dumps({"data": data, "previews": previews}, indent=1) + "\n")
     darner_root = Path(darner.__file__).parent.parent
     sources = {
-        "darner": {"version": darner_version(darner_root), "commit": git(darner_root, "rev-parse", "HEAD")},
-        "dejima": {"release": git(dejima, "describe", "--tags", "--always"), "commit": git(dejima, "rev-parse", "HEAD")},
+        "darner": {"repo": "dejima/darner", **pin(darner_root), "version": darner_version(darner_root)},
+        "dejima": {"repo": "dejima/dejima", **pin(dejima)},
     }
     (ROOT / "sources.json").write_text(json.dumps(sources, indent=2) + "\n")
-    print(f"generated site/ from darner {sources['darner']['version']} and dejima {sources['dejima']['release']}")
+    shown = {k: v["release"] or f"{v['ref']} at {v['commit'][:7]}" for k, v in sources.items()}
+    print(f"generated site/ from darner {shown['darner']} and dejima {shown['dejima']}")
+
+
+def pin(checkout: Path) -> dict:
+    """What a checkout is at: its release tag, or else its branch, with the commit and today's date."""
+    # Releases only, as make sources counts them: not darner's v<version>.dev<run> pre-releases.
+    tags = git(checkout, "tag", "--points-at", "HEAD").split()
+    release = next((t for t in tags if re.fullmatch(r"v?\d+(\.\d+)+[a-z]?", t)), None)
+    return {
+        "release": release, "ref": None if release else git(checkout, "rev-parse", "--abbrev-ref", "HEAD"),
+        "commit": git(checkout, "rev-parse", "HEAD"), "captured": datetime.date.today().isoformat(),
+    }
 
 
 def darner_version(root: Path) -> str:

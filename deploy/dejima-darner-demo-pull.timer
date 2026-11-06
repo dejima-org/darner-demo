@@ -1,5 +1,5 @@
 [Unit]
-Description=Check for a new build of dejima-demo-darner every few minutes
+Description=Check for a new build of dejima-darner-demo every few minutes
 
 [Timer]
 OnBootSec=1min

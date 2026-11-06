@@ -1,6 +1,6 @@
-# Install to /etc/systemd/system/, with dejima-demo-darner-pull.timer. See README.md.
+# Install to /etc/systemd/system/, with dejima-darner-demo-pull.timer. See README.md.
 [Unit]
-Description=Deploy the newest build of dejima-demo-darner
+Description=Deploy the newest build of dejima-darner-demo
 Wants=network-online.target
 After=network-online.target
 
@@ -9,16 +9,16 @@ Type=oneshot
 User=site-deploy
 Group=site-deploy
 Environment=SITE_FORGE_API=https://gitbox.branderson.io/api/v1
-Environment=SITE_REPO=dejima/demo-darner
-Environment=SITE_ROOT=/srv/www/demo-darner.dejima.page
+Environment=SITE_REPO=dejima/darner-demo
+Environment=SITE_ROOT=/srv/www/darner-demo.dejima.page
 # A read:repository token for an account that can read only the sites it deploys,
 # readable by root only.
 LoadCredential=token:/etc/site-deploy/token
-ExecStart=/usr/local/bin/pull-dejima-demo-darner.sh
+ExecStart=/usr/local/bin/pull-dejima-darner-demo.sh
 
 NoNewPrivileges=yes
 ProtectSystem=strict
-ReadWritePaths=/srv/www/demo-darner.dejima.page
+ReadWritePaths=/srv/www/darner-demo.dejima.page
 ProtectHome=yes
 PrivateTmp=yes
 PrivateDevices=yes
