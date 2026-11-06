@@ -1,4 +1,4 @@
-# demo-darner
+# darner-demo
 
 A demo of [darner](https://gitbox.branderson.io/dejima/darner)'s browser frontend, darner-web, as a static site. Start a task with the example config sets and blurbs, watch its session run and deliver output, message it, stop it and clear it, or run the self-test. There's no model and no sandbox behind it: the visitor's sessions live in their browser's localStorage, and nothing they type is sent anywhere.
 
@@ -47,7 +47,7 @@ GPL-3.0-or-later, as darner, whose templates, script and styles the pages are. `
 
 ## Deploy
 
-Served at `demo-darner.dejima.page`, from the same web host as `dejima.page` and `xray.dejima.page`, and the same way:
+Served at `darner-demo.dejima.page`, from the same web host as `dejima.page` and `xray.dejima.page`, and the same way:
 
 ```
 forge (Gitea), on every push to main
@@ -55,7 +55,7 @@ forge (Gitea), on every push to main
        1. make check test   build public/, check it, run the tests
        2. upload public/ as the run's `site` artifact
 
-web host, every 5 minutes (deploy/dejima-demo-darner-pull.timer)
+web host, every 5 minutes (deploy/dejima-darner-demo-pull.timer)
   └─ deploy/pull-site.sh
        1. find the newest successful deploy.yml run for a push to main;
           stop if its commit is already live
@@ -64,7 +64,7 @@ web host, every 5 minutes (deploy/dejima-demo-darner-pull.timer)
        3. atomically repoint the `current` symlink at it
        4. keep the newest 5 releases
 
-nginx  root = /srv/www/demo-darner.dejima.page/current  (deploy/nginx.conf)
+nginx  root = /srv/www/darner-demo.dejima.page/current  (deploy/nginx.conf)
 ```
 
 The web host pulls rather than CI pushing, because the runner executes agent-authored code and is kept off the network the web host sits on. CI talks only to the forge; the web host talks only to the forge, read-only. Neither holds a credential for the other, and the artifact upload uses the run's own token.
@@ -80,28 +80,28 @@ This reuses what the landing page's deploy already created: the `site-deploy` fo
 **Web host, once.**
 
 ```sh
-install -d -o site-deploy -g site-deploy -m 755 /srv/www/demo-darner.dejima.page
+install -d -o site-deploy -g site-deploy -m 755 /srv/www/darner-demo.dejima.page
 
 # Fetch just deploy/. --config-env keeps the token out of argv and out of the
 # clone's .git/config. Needs git 2.31+.
 export GIT_AUTH="Authorization: token $(cat /etc/site-deploy/token)"
 git --config-env=http.extraHeader=GIT_AUTH clone --depth 1 --filter=blob:none --sparse \
-    https://gitbox.branderson.io/dejima/demo-darner.git /usr/local/src/dejima-demo-darner
-git --config-env=http.extraHeader=GIT_AUTH -C /usr/local/src/dejima-demo-darner sparse-checkout set deploy
+    https://gitbox.branderson.io/dejima/darner-demo.git /usr/local/src/dejima-darner-demo
+git --config-env=http.extraHeader=GIT_AUTH -C /usr/local/src/dejima-darner-demo sparse-checkout set deploy
 unset GIT_AUTH
-cd /usr/local/src/dejima-demo-darner
+cd /usr/local/src/dejima-darner-demo
 
-install -m 755 deploy/pull-site.sh /usr/local/bin/pull-dejima-demo-darner.sh
-install -m 644 deploy/dejima-demo-darner-pull.service deploy/dejima-demo-darner-pull.timer /etc/systemd/system/
+install -m 755 deploy/pull-site.sh /usr/local/bin/pull-dejima-darner-demo.sh
+install -m 644 deploy/dejima-darner-demo-pull.service deploy/dejima-darner-demo-pull.timer /etc/systemd/system/
 systemctl daemon-reload
-systemctl start dejima-demo-darner-pull.service      # first deploy, now; check it worked:
-journalctl -u dejima-demo-darner-pull.service -n 20
-systemctl enable --now dejima-demo-darner-pull.timer
+systemctl start dejima-darner-demo-pull.service      # first deploy, now; check it worked:
+journalctl -u dejima-darner-demo-pull.service -n 20
+systemctl enable --now dejima-darner-demo-pull.timer
 ```
 
-The script and units have their own names, so they sit beside the landing page's and xray's without touching them. `SITE_FORGE_API` in the service names the forge by its public hostname; if the web host reaches it by another name, override it with `systemctl edit dejima-demo-darner-pull.service` rather than editing the committed file.
+The script and units have their own names, so they sit beside the landing page's and xray's without touching them. `SITE_FORGE_API` in the service names the forge by its public hostname; if the web host reaches it by another name, override it with `systemctl edit dejima-darner-demo-pull.service` rather than editing the committed file.
 
-Add the directives in `deploy/nginx.conf` to a new `demo-darner.dejima.page` server block inside the host's existing TLS setup, with a certificate for `demo-darner.dejima.page` or `*.dejima.page`, then `nginx -t && systemctl reload nginx`. The `current` symlink is resolved per request, so later deploys need no reload.
+Add the directives in `deploy/nginx.conf` to a new `darner-demo.dejima.page` server block inside the host's existing TLS setup, with a certificate for `darner-demo.dejima.page` or `*.dejima.page`, then `nginx -t && systemctl reload nginx`. The `current` symlink is resolved per request, so later deploys need no reload.
 
 `deploy/nginx.conf` sends darner-web's own headers, its CSP included, and maps every session's page to `sessions/view.html` and every session's zip to the demo's. An `add_header` in a `location` block replaces the server block's, so none of its locations add one; keep it that way if you add any.
 
@@ -111,29 +111,29 @@ To pick up a later change to `deploy/`, update the clone and repeat the two `ins
 
 ```sh
 export GIT_AUTH="Authorization: token $(cat /etc/site-deploy/token)"
-git --config-env=http.extraHeader=GIT_AUTH -C /usr/local/src/dejima-demo-darner pull --depth 1
+git --config-env=http.extraHeader=GIT_AUTH -C /usr/local/src/dejima-darner-demo pull --depth 1
 unset GIT_AUTH
 ```
 
 ### Checking a deploy
 
 ```sh
-curl -s -o /dev/null -w "%{http_code}\n" https://demo-darner.dejima.page/
-curl -s -o /dev/null -w "%{http_code}\n" https://demo-darner.dejima.page/sessions/dn-abcde
-curl -sI https://demo-darner.dejima.page/ | grep -i content-security-policy
+curl -s -o /dev/null -w "%{http_code}\n" https://darner-demo.dejima.page/
+curl -s -o /dev/null -w "%{http_code}\n" https://darner-demo.dejima.page/sessions/dn-abcde
+curl -sI https://darner-demo.dejima.page/ | grep -i content-security-policy
 ```
 
-The first two print 200, and the third prints darner-web's CSP. `readlink /srv/www/demo-darner.dejima.page/current` on the host names the commit being served. Then start a task in a browser, on a phone too.
+The first two print 200, and the third prints darner-web's CSP. `readlink /srv/www/darner-demo.dejima.page/current` on the host names the commit being served. Then start a task in a browser, on a phone too.
 
 ### Rollback
 
 Releases are kept in `releases/`, each named after the first 12 characters of its commit. To serve an earlier one:
 
 ```sh
-systemctl stop dejima-demo-darner-pull.timer   # or the next run redeploys main
-cd /srv/www/demo-darner.dejima.page
+systemctl stop dejima-darner-demo-pull.timer   # or the next run redeploys main
+cd /srv/www/darner-demo.dejima.page
 ls -1t releases                                # pick the release to restore
 sudo -u site-deploy sh -c 'ln -sfn releases/<id> current.new && mv -T current.new current'
 ```
 
-That changes what is served, not what is on `main`. Fix or revert the commit on the forge, let CI publish the fix, then `systemctl start dejima-demo-darner-pull.timer` again.
+That changes what is served, not what is on `main`. Fix or revert the commit on the forge, let CI publish the fix, then `systemctl start dejima-darner-demo-pull.timer` again.

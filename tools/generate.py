@@ -40,10 +40,10 @@ from darner.web import make_app as make_web  # noqa: E402
 ROOT = Path(__file__).resolve().parent.parent
 SITE = ROOT / "site"
 FIXTURES = ROOT / "test" / "fixtures"
-ORIGIN = "https://demo-darner.dejima.page"
-HOST = {"Host": "demo-darner.dejima.page"}
+ORIGIN = "https://darner-demo.dejima.page"
+HOST = {"Host": "darner-demo.dejima.page"}
 POST = {**HOST, "Origin": ORIGIN, "X-Darner-Request": "1", "Sec-Fetch-Site": "same-origin"}
-TOKEN = "demo-darner-" + "0" * 32
+TOKEN = "darner-demo-" + "0" * 32
 # Every session's id and name in a captured page is one of these, which demo.js
 # replaces with the visitor's.
 ID, NAME = "dn-zzzzz", "example"
