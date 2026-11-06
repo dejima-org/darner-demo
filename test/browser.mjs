@@ -80,6 +80,16 @@ try {
   await page.waitForURL(`${base}/`);
   assert.match(await page.textContent("main"), /No sessions/);
 
+  // Each new-task page starts its own task.
+  for (const task of ["first", "second"]) {
+    await page.goto(`${base}/new`);
+    await page.fill("#task", task);
+    await page.click("button[type=submit]");
+    await page.waitForURL(/\/sessions\/dn-[a-z2-7]{5}$/);
+  }
+  await page.goto(base);
+  assert.equal(await page.locator("li.card").count(), 2);
+
   await page.goto(`${base}/selftest`);
   await page.click("button[data-post='/selftest']");
   await page.waitForURL(/\/sessions\/dn-/);

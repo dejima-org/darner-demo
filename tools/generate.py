@@ -327,6 +327,9 @@ async def generate(dejima: Path) -> None:
         for real in (task, other, selftest):
             html = html.replace(real, ID)
         assert not re.search(r"dn-(?!zzzzz\b|example\b|k3x7q\b)[a-z2-7]{5}\b", html), f"{key} names another session"
+        # Both differ on every capture, and demo.js sets its own.
+        html = re.sub(r'data-version="[0-9a-f]+"', 'data-version="captured"', html)
+        html = re.sub(r'name="ref" value="[0-9a-f]{32}"', 'name="ref" value="' + "0" * 32 + '"', html)
         pages[key] = html
 
     data = {
