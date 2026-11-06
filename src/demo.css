@@ -10,3 +10,12 @@
   color: var(--fg-dim);
   font-size: 0.95rem;
 }
+
+/* The link to the demo's source, under main. */
+.demo-source {
+  max-width: var(--wrap);
+  margin: -2rem auto 0;
+  padding: 0 var(--pad-x) 2.5rem;
+  color: var(--fg-dim);
+  font-size: 0.9rem;
+}
