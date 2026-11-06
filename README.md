@@ -31,15 +31,7 @@ Like `app.js`, it sets text and never inserts HTML, so darner-web's CSP holds un
 
 ## Keeping it current
 
-`sources.json` says which darner and dejima the pages were captured from. After a darner or dejima release, or a change to `configs/`, `blurbs/` or the generator:
-
-```sh
-make generate DARNER=<darner checkout> DEJIMA=<dejima checkout>
-make test
-make build && node test/browser.mjs
-```
-
-The darner checkout needs its test dependencies in `.venv`, as its `docs/development.md` describes. If darner changed what its preview checks, `make test` fails until `src/model.js` matches.
+`sources.json` says which darner and dejima the pages were captured from. [docs/keeping-current.md](docs/keeping-current.md) is the process for each release: capture the pages again, triage the changelogs for what the tests can't catch, and tag the result. `make sources` says which pins have fallen behind. A change to `configs/`, `blurbs/` or the generator needs `make generate` too: `make serve` only copies what was captured.
 
 ## Licence
 

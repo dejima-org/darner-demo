@@ -13,6 +13,7 @@ delivers its output and is stopped through the API as a real one is.
 import argparse
 import asyncio
 import contextlib
+import datetime
 import io
 import itertools
 import json
@@ -89,9 +90,12 @@ elif cmd[:1] == ["forget"]:
     print(json.dumps({"kept": "its output wasn't delivered whole"}))
 elif cmd[:1] in (["stop"], ["discard"]):
     pass
-else:
+elif not cmd:
     job = json.load(sys.stdin)
     print(json.dumps({"id": job["id"], "target": "darner:" + job["id"]}))
+else:
+    # A command darner added since this stub was written: say so, rather than guess.
+    sys.exit(f"the generator's stub launcher doesn't know {cmd}; teach it what darner-launch answers")
 '''
 
 
@@ -368,11 +372,24 @@ async def generate(dejima: Path) -> None:
     (FIXTURES / "previews.json").write_text(json.dumps({"data": data, "previews": previews}, indent=1) + "\n")
     darner_root = Path(darner.__file__).parent.parent
     sources = {
-        "darner": {"version": darner_version(darner_root), "commit": git(darner_root, "rev-parse", "HEAD")},
-        "dejima": {"release": git(dejima, "describe", "--tags", "--always"), "commit": git(dejima, "rev-parse", "HEAD")},
+        "darner": {"repo": "dejima/darner", **pin(darner_root), "version": darner_version(darner_root)},
+        "dejima": {"repo": "dejima/dejima", **pin(dejima)},
     }
     (ROOT / "sources.json").write_text(json.dumps(sources, indent=2) + "\n")
-    print(f"generated site/ from darner {sources['darner']['version']} and dejima {sources['dejima']['release']}")
+    shown = {k: v["release"] or f"{v['ref']} at {v['commit'][:7]}" for k, v in sources.items()}
+    print(f"generated site/ from darner {shown['darner']} and dejima {shown['dejima']}")
+
+
+def pin(checkout: Path) -> dict:
+    """What a checkout is at: its release tag, or else its branch, with the commit and today's date."""
+    try:
+        release = git(checkout, "describe", "--tags", "--exact-match")
+    except subprocess.CalledProcessError:
+        release = None
+    return {
+        "release": release, "ref": None if release else git(checkout, "rev-parse", "--abbrev-ref", "HEAD"),
+        "commit": git(checkout, "rev-parse", "HEAD"), "captured": datetime.date.today().isoformat(),
+    }
 
 
 def darner_version(root: Path) -> str:

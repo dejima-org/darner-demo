@@ -3,7 +3,7 @@
 DARNER ?= ../darner
 DEJIMA ?= ../dejima
 
-.PHONY: build check test serve generate clean
+.PHONY: build check test serve generate sources clean
 
 build:
 	rm -rf public
@@ -28,6 +28,11 @@ test:
 # Regenerates site/ and test/fixtures/ from a darner and a dejima checkout.
 generate:
 	$(DARNER)/.venv/bin/python tools/generate.py --darner $(DARNER) --dejima $(DEJIMA)
+
+# Which pins in sources.json have fallen behind their projects. Needs read
+# access to the forge; DARNER_DEMO_FORGE overrides where it reads from.
+sources:
+	node tools/check-sources.mjs
 
 serve: build
 	python3 tools/serve.py public 8000
