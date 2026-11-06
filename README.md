@@ -15,7 +15,7 @@ Then open `http://localhost:8000`. `make check` builds `public/` and fails if an
 Every page is one darner-web served. `tools/generate.py` runs darner's own API and darner-web in-process, with a stub in place of the launcher on the dejima host, and captures what they serve:
 
 - **The catalog** is darner-launch's, read from a dejima checkout's manifests, with dejima's defaults and the operator's models set to example values in the script.
-- **The config sets and blurbs** are `configs/` and `blurbs/`. The files a config set gives a session are placeholders in `files/`.
+- **The config sets and blurbs** are `configs/` and `blurbs/`, as darner reads them from `configs_dir` and `blurbs_dir`: a blurb is `<name>.md`. The files a config set gives a session are placeholders in `files/`.
 - **The demo task** is started through darner-web's form and the API's launch. Its output, `OUTPUT` in the script, is delivered from the stub as a zip, the way a real session's is. It's then stopped through the API.
 
 The pages go into `site/`, with darner-web's own `static/`. Each session state is captured as its own view: running with nothing yet, running with output, ended with and without output, the self-test's session, and a session that doesn't exist. The view for every state shares one page, `site/sessions/view.html`.

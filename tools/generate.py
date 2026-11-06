@@ -129,9 +129,7 @@ class Demo:
         (work / "stub.py").write_text(STUB)
         os.environ["DEMO_STUB"] = str(self.ctl)
         blurbs = work / "blurbs"
-        blurbs.mkdir()
-        for f in sorted((ROOT / "blurbs").iterdir()):
-            (blurbs / f"{f.name}.md").write_text(f.read_text())
+        shutil.copytree(ROOT / "blurbs", blurbs, dirs_exist_ok=True)
         shutil.copytree(ROOT / "configs", work / "configs")
         shutil.copytree(ROOT / "files", work / "configs" / "files")
         self.config = {
@@ -275,7 +273,7 @@ async def generate(dejima: Path) -> None:
             pages["blurbs"] = await demo.get("/blurbs")
             pages["configs"] = await demo.get("/configs")
             pages["selftest"] = await demo.get("/selftest")
-            blurb_names = sorted(f.name for f in (ROOT / "blurbs").iterdir())
+            blurb_names = sorted(f.stem for f in (ROOT / "blurbs").glob("*.md"))
             config_names = configsets.available(work / "configs")
             for name in blurb_names:
                 pages[f"blurbs/{name}"] = await demo.get(f"/blurbs/{name}")
@@ -335,7 +333,7 @@ async def generate(dejima: Path) -> None:
     data = {
         "id": ID, "name": NAME,
         "labels": SETTING_LABELS, "started_with": list(api.STARTED_WITH), "singles": list(configsets.SINGLES),
-        "sets": sets, "blurbs": {n: (ROOT / "blurbs" / n).read_text() for n in blurb_names},
+        "sets": sets, "blurbs": {n: (ROOT / "blurbs" / f"{n}.md").read_text() for n in blurb_names},
         "session_name": api.SESSION_NAME.pattern, "name_rule": api.NAME_RULE,
         "domain": job._DOMAIN.pattern, "dependency": job._DEP.pattern, "tarball": job._TARBALL.pattern,
         "effort": job._EFFORT.pattern, "context_window": [job.CONTEXT_WINDOW.start, job.CONTEXT_WINDOW.stop - 1],
