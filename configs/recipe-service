@@ -1,3 +1,4 @@
+# Self-hosted Cline session configured for recipe-service tasks
 blurb: recipe-service
 internal: recipes.example.com:8443
 file: recipe-service-api-token, add_recipe.py

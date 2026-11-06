@@ -212,6 +212,10 @@ window.fetch = async (input, init = {}) => {
   return realFetch(input, init);
 };
 
+// A fresh ref for each new-task page, as darner-web gives one, so a resent form finds the task it started.
+const ref = document.querySelector('input[name="ref"]');
+if (ref) ref.value = [...crypto.getRandomValues(new Uint8Array(16))].map((b) => b.toString(16).padStart(2, "0")).join("");
+
 const path = location.pathname.replace(/\.html$/, "");
 const session = path.match(/^\/sessions\/(dn-[a-z0-9-]+)$/);
 if (session) sessionPage(session[1]);
