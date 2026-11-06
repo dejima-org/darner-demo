@@ -43,6 +43,8 @@ SITE = ROOT / "site"
 FIXTURES = ROOT / "test" / "fixtures"
 ORIGIN = "https://darner-demo.dejima.page"
 HOST = {"Host": "darner-demo.dejima.page"}
+# The public repository, linked from every page, since serving them conveys the code.
+SOURCE = "https://github.com/dejima-org/darner-demo"
 POST = {**HOST, "Origin": ORIGIN, "X-Darner-Request": "1", "Sec-Fetch-Site": "same-origin"}
 TOKEN = "darner-demo-" + "0" * 32
 # Every session's id and name in a captured page is one of these, which demo.js
@@ -199,7 +201,7 @@ def views(base: str, variants: dict[str, str]) -> str:
 
 
 def finish(html: str, data: str) -> str:
-    """A captured page as the demo serves it: demo.js before app.js, its styles, and the note saying what it is."""
+    """A captured page as the demo serves it: demo.js before app.js, its styles, the note saying what it is, and a link to its source."""
     for old, new in (
         ('<script src="/static/app.js" defer></script>',
          f'<script type="application/json" id="demo-data">{data}</script>\n'
@@ -209,6 +211,9 @@ def finish(html: str, data: str) -> str:
         ("</header>\n",
          '</header>\n<p class="demo-note">A demo of darner, with no model and no sandbox: nothing you type leaves this browser. '
          '<a href="https://dejima.page/">dejima.page</a></p>\n'),
+        ("</main>\n</body>",
+         '</main>\n<footer class="demo-source">darner-demo is free software, under the GPL. '
+         f'<a href="{SOURCE}">Its source</a></footer>\n</body>'),
     ):
         assert html.count(old) == 1, old
         html = html.replace(old, new)
