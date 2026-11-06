@@ -95,6 +95,8 @@ try {
     assert.equal(response.status(), 200, path);
     assert.match(await page.textContent("main h1"), new RegExp(`^${heading}`), path);
   }
+  await page.goto(`${base}/configs`);
+  assert.match(await page.textContent(".names"), /local Self-hosted Cline session/);
   await page.goto(`${base}/configs/local`);
   assert.match(await page.textContent("main"), /Self-hosted Cline session/);
   await shot("8-config");

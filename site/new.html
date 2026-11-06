@@ -30,14 +30,14 @@
 
 <h1>New task</h1>
 <form method="post" data-action="/tasks" class="new">
-<input type="hidden" name="ref" value="8605de1f427a929a980992ee23cb230a">
+<input type="hidden" name="ref" value="35fc17464f2e31cdd6eac4e4bb563f63">
 <label for="task">Task</label>
 <textarea id="task" name="task" rows="4" required></textarea>
 <label for="name">Name <span class="quiet">optional: lowercase letters, digits and hyphens, unique among open sessions</span></label>
 <input id="name" name="name" maxlength="35" pattern="(dn-)?[a-z0-9][a-z0-9\-]{0,31}" autocomplete="off" placeholder="its id, such as dn-k3x7q">
 
 <fieldset><legend>Config sets</legend>
-<div class="choices"><label class="choice"><input type="checkbox" name="configs" value="local"> <a href="/configs/local">local</a></label><label class="choice"><input type="checkbox" name="configs" value="recipe-service"> <a href="/configs/recipe-service">recipe-service</a></label><label class="choice"><input type="checkbox" name="configs" value="sealed"> <a href="/configs/sealed">sealed</a></label></div>
+<div class="choices"><label class="choice"><input type="checkbox" name="configs" value="local"> <a href="/configs/local">local</a> <span class="description">Self-hosted Cline session</span></label><label class="choice"><input type="checkbox" name="configs" value="recipe-service"> <a href="/configs/recipe-service">recipe-service</a></label><label class="choice"><input type="checkbox" name="configs" value="sealed"> <a href="/configs/sealed">sealed</a> <span class="description">Sealed self-hosted Cline session with no network access possible</span></label></div>
 </fieldset>
 
 
