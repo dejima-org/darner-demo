@@ -1,6 +1,36 @@
+<!-- Fixed, not preference-aware, and that is the decision rather than an
+     oversight. `prefers-color-scheme` reports the browser's setting, never the
+     site's, and this is read on a forge that renders dark whichever way the
+     browser is set - so anything conditional shows dark ink on a dark page to
+     a reader whose browser prefers light, and does it silently.
+     The suffix names the mode a file is FOR, not the colour of its ink:
+     -darkmode is the pale wordmark that belongs on a dark page. GitHub does
+     follow its own theme setting through <picture>, so the GitHub mirror
+     replaces the tag below with one that falls back to
+     dejima-wordmark-lightmode.png; see dejima's mirror/github-mirror.sh.
+     Every &nbsp; here is spacing, and it has to be a character rather than CSS
+     or a presentation attribute. Gitea's sanitizer strips `style` from the tag
+     and from any wrapper, `hspace`/`vspace` survive sanitizing only to be
+     ignored by browsers that dropped HTML4 presentation attributes, and a bare
+     <br> ends a line nothing follows, which browsers collapse to no height.
+     &nbsp; survives as a real U+00A0: on its own line it fills a paragraph
+     that would otherwise be empty, and immediately before the tag it sits
+     inline and indents the image by one space. -->
+&nbsp;
+
+&nbsp;<img src="assets/dejima-wordmark-darkmode.png" alt="dejima" height="72">
+
+---
+
+&nbsp;
+
 # darner-demo
 
 A demo of [darner](https://gitbox.branderson.io/dejima/darner)'s browser frontend, darner-web, as a static site. Start a task with the example config sets and blurbs, watch its session run and deliver output, message it, stop it and clear it, or run the self-test. There's no model and no sandbox behind it: the visitor's sessions live in their browser's localStorage, and nothing they type is sent anywhere.
+
+[![Developed in dejima](assets/dejima-badge.svg)](https://gitbox.branderson.io/dejima/dejima)
+
+**→ [SECURITY.md](SECURITY.md)**: what the demo does and doesn't do with what a visitor types, and how to report a vulnerability.
 
 ## Preview
 
@@ -35,7 +65,11 @@ Like `app.js`, it sets text and never inserts HTML, so darner-web's CSP holds un
 
 ## Licence
 
-GPL-3.0-or-later, as darner, whose templates, script and styles the pages are. `site/static/` is darner-web's: its README says what is and isn't covered.
+GPL-3.0-or-later, as darner, whose templates, script and styles the pages are. Serving them conveys that code to each visitor, so every page links this repository's public copy. `site/static/` is darner-web's: its README says what is and isn't covered.
+
+The dejima wordmark and logo are not code and are not covered by that licence. They are trademarks; who holds them and what may be done with them is stated once for the organisation, at [dejima's ATTRIBUTION.md](https://gitbox.branderson.io/dejima/dejima/src/branch/main/ATTRIBUTION.md).
+
+The fonts in `site/static/fonts/` are under the SIL Open Font License, each with its licence beside it, and `make check` fails if one is missing from the build.
 
 ## Deploy
 
