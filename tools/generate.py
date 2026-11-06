@@ -382,10 +382,9 @@ async def generate(dejima: Path) -> None:
 
 def pin(checkout: Path) -> dict:
     """What a checkout is at: its release tag, or else its branch, with the commit and today's date."""
-    try:
-        release = git(checkout, "describe", "--tags", "--exact-match")
-    except subprocess.CalledProcessError:
-        release = None
+    # Releases only, as make sources counts them: not darner's v<version>.dev<run> pre-releases.
+    tags = git(checkout, "tag", "--points-at", "HEAD").split()
+    release = next((t for t in tags if re.fullmatch(r"v?\d+(\.\d+)+[a-z]?", t)), None)
     return {
         "release": release, "ref": None if release else git(checkout, "rev-parse", "--abbrev-ref", "HEAD"),
         "commit": git(checkout, "rev-parse", "HEAD"), "captured": datetime.date.today().isoformat(),

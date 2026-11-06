@@ -2,8 +2,8 @@
   "darner": {
     "repo": "dejima/darner",
     "release": null,
-    "ref": "config-descriptions",
-    "commit": "338c0c3d029f810dd279016de63c1966b4001f6c",
+    "ref": "development",
+    "commit": "eaade0c02d8b2bdefc0afa4b4d12ab9047c89902",
     "captured": "2026-11-06",
     "version": "0.1.19"
   },
