@@ -1,0 +1,12 @@
+/* SPDX-License-Identifier: GPL-3.0-or-later */
+/* The note saying this is a demo, in app.css's terms, as wide as main's content. */
+.demo-note {
+  box-sizing: border-box;
+  width: min(100% - 2 * var(--pad-x), var(--wrap) - 2 * var(--pad-x));
+  margin: 1.5rem auto 0;
+  padding: 0.6rem 1rem;
+  border-left: 3px solid var(--waiting);
+  background: var(--bg-raise);
+  color: var(--fg-dim);
+  font-size: 0.95rem;
+}

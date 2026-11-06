@@ -1,0 +1,31 @@
+name: build and deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: dejima-confined
+    steps:
+      - uses: actions/checkout@v4
+
+      # The publish step is last and nothing before it continues on error,
+      # so a failed check never uploads a build.
+      - name: Build, check, and test
+        run: make check test
+
+      # The web host pulls this artifact from the newest successful push run
+      # on main (see the README). CI has no route to the host and holds no
+      # deploy credential; the upload uses the run's own token.
+      #
+      # actions/upload-artifact@v4 refuses any server but github.com. This is
+      # that action at upstream 694cdab with only isGhes() changed to return
+      # false, pinned by hash so the fork can't change under us. It has to be
+      # v4: Gitea's API only serves v4 artifacts for download.
+      - name: Upload the build
+        uses: christopherhx/gitea-upload-artifact@81f940d004763f986ba3582c007fd842dd5cb0d7
+        with:
+          name: site
+          path: public/
+          if-no-files-found: error

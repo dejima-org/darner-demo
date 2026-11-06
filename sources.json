@@ -1,0 +1,10 @@
+{
+  "darner": {
+    "version": "0.1.19",
+    "commit": "364e7e0a7bd502db7c31d3a2bda2e26bc5a8c80a"
+  },
+  "dejima": {
+    "release": "2026.11.04",
+    "commit": "420ef481a7c265398277bd4bda87b1ce8aec040c"
+  }
+}

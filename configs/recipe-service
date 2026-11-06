@@ -1,0 +1,7 @@
+blurb: recipe-service
+internal: recipes.example.com:8443
+file: recipe-service-api-token, add_recipe.py
+harness: cline
+backend: self-hosted
+model: qwen3.5-4b
+context_window: 120000

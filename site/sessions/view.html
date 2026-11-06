@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>dn-example · darner</title>
+<link rel="icon" href="/static/favicon.png">
+<link rel="stylesheet" href="/static/app.css">
+<link rel="stylesheet" href="/demo/demo.css">
+<script type="application/json" id="demo-data">{"id":"dn-zzzzz","name":"example","labels":{"configs":"Config sets","blurbs":"Blurbs","harness":"Harness","backend":"Backend","model":"Model","effort":"Effort","context_window":"Context window","network":"Reach","domains":"Domains","internal_domains":"Internal domains","dependencies":"Dependencies","files":"Files"},"started_with":["configs","blurbs","harness","backend","model","effort","context_window","network","domains","internal_domains","dependencies","files"],"singles":["harness","backend","model","effort","context_window","network"],"sets":{"":{"sets":{"blurbs":[],"domains":[],"internal":[],"dependencies":[],"files":[],"harness":null,"backend":null,"model":null,"effort":null,"context_window":null,"network":null},"conflicts":[]},"local":{"sets":{"blurbs":["search"],"domains":[],"internal":[],"dependencies":[],"files":[],"harness":"cline","backend":"self-hosted","model":"qwen3.5-4b","effort":null,"context_window":"120000","network":null},"conflicts":[]},"recipe-service":{"sets":{"blurbs":["recipe-service"],"domains":[],"internal":["recipes.example.com:8443"],"dependencies":[],"files":["recipe-service-api-token","add_recipe.py"],"harness":"cline","backend":"self-hosted","model":"qwen3.5-4b","effort":null,"context_window":"120000","network":null},"conflicts":[]},"sealed":{"sets":{"blurbs":[],"domains":[],"internal":[],"dependencies":[],"files":[],"harness":"cline","backend":"self-hosted","model":"qwen3.5-4b","effort":null,"context_window":"120000","network":"sealed"},"conflicts":[]},"local,recipe-service":{"sets":{"blurbs":["search","recipe-service"],"domains":[],"internal":["recipes.example.com:8443"],"dependencies":[],"files":["recipe-service-api-token","add_recipe.py"],"harness":"cline","backend":"self-hosted","model":"qwen3.5-4b","effort":null,"context_window":"120000","network":null},"conflicts":[]},"local,sealed":{"sets":{"blurbs":["search"],"domains":[],"internal":[],"dependencies":[],"files":[],"harness":"cline","backend":"self-hosted","model":"qwen3.5-4b","effort":null,"context_window":"120000","network":"sealed"},"conflicts":[]},"recipe-service,sealed":{"sets":{"blurbs":["recipe-service"],"domains":[],"internal":["recipes.example.com:8443"],"dependencies":[],"files":["recipe-service-api-token","add_recipe.py"],"harness":"cline","backend":"self-hosted","model":"qwen3.5-4b","effort":null,"context_window":"120000","network":"sealed"},"conflicts":[]},"local,recipe-service,sealed":{"sets":{"blurbs":["search","recipe-service"],"domains":[],"internal":["recipes.example.com:8443"],"dependencies":[],"files":["recipe-service-api-token","add_recipe.py"],"harness":"cline","backend":"self-hosted","model":"qwen3.5-4b","effort":null,"context_window":"120000","network":"sealed"},"conflicts":[]}},"blurbs":{"recipe-service":"- Server: `https://recipes.example.com:8443` (recipe-service v1.1). **Port 8443, not 443**: port 443 times out.\n- Auth: `Authorization: Bearer \u003ctoken>`. The token is in the `recipe-service-api-token` file at `/home/user/shared/uploads/recipe-service-api-token`. Never print it or commit it.\n- To add a recipe from a URL, use `add_recipe.py URL` (`--dry-run` first) in `/home/user/shared/uploads/add_recipe.py`. It checks for duplicates, imports, and parses ingredients, matching them to existing foods and units.\n    - You can use this as an example to build off if doing something else on the server.\n- If the expected filea aren't in `/home/user/shared/uploads`, stop and tell the user.\n- Recipe page: `https://recipes.example.com:8443/g/home/r/\u003cslug>`\n- When adding or modifying recipes in the server, remember to parse the ingredients and amounts into recipe-service's internal objects, rather than raw strings. Use existing ingredients and amounts in the recipe-service instance where possible, rather than creating new ones.\n\nAPI, if doing it by hand:\n- The API docs are at https://recipes.example.com:8443/docs.\n- Duplicate check: `GET /api/recipes?perPage=-1`, then compare `orgURL` with the source URL. `?search=` is fuzzy and unreliable.\n- Import: `POST /api/recipes/create/url` with `{\"url\": ..., \"includeTags\": true}`. It returns the slug as a JSON string with quotes.\n- Imported ingredients are raw text (`food: null`, with the text in `note`). They must be parsed afterwards.\n- Parse: `POST /api/parser/ingredients` with `{\"strategy\": \"nlp\", \"ingredients\": [lines]}`.\n  - A food or unit **without an `id`** is the parser proposing a new one. Map it to an existing item instead (`GET /api/foods?perPage=-1`, `GET /api/units?perPage=-1`). For example, \"ripe bananas\" becomes food `banana` with note `ripe`.\n  - The parser sometimes drops words (e.g. \"mini\" in \"mini chocolate chips\") and rounds 1/3 to 0.333. Compare each result with the input line.\n- Save: `PATCH /api/recipes/\u003cslug>` with `{\"recipeIngredient\": [...]}`. Keep each item's `referenceId`, and set `originalText` to the source line.\n- Verify: `GET /api/recipes/\u003cslug>` and check each ingredient's `display`.\n- Imports often leave `recipeYield` empty and add \"Recipe by \u003csite>\" to the name. Fix these with a `PATCH` if wanted.\n\n","search":"- you can perform web searches using my searxng instance at search.example.com\n"},"session_name":"[a-z0-9][a-z0-9-]{0,31}","name_rule":"a session name is up to 32 lowercase letters, digits and hyphens, not shaped like a session id","domain":"[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+","dependency":"(apt|pip|cargo):[A-Za-z0-9][A-Za-z0-9._+-]*|npm:(@[A-Za-z0-9][A-Za-z0-9._-]*/)?[A-Za-z0-9][A-Za-z0-9._-]*(@[A-Za-z0-9][A-Za-z0-9._-]*)?","tarball":"tarball:([A-Za-z0-9][A-Za-z0-9._-]*)@[a-f0-9]{64}:(https://[A-Za-z0-9._~/?=+%-]{1,504})","effort":"[a-z][a-z0-9]{0,31}","context_window":[512,100000000],"networks":["named","sealed"],"max_grants":64,"dependency_kinds":["apt","cargo","npm","pip"],"catalog":{"harnesses":["claude-code","cline"],"backends":["anthropic","anthropic-api-key","openrouter","self-hosted"],"default_harness":"claude-code","defaults":{"claude-code":{"backend":"anthropic","model":"claude-opus-5-5"}},"options":{"claude-code":{"backends":["anthropic","anthropic-api-key"],"efforts":["low","medium","high","xhigh"],"context_window":false},"cline":{"backends":["anthropic","anthropic-api-key","openrouter","self-hosted"],"efforts":["none","low","medium","high","xhigh"],"context_window":true}}}}</script>
+<script type="module" src="/demo/demo.js"></script>
+<script src="/static/app.js" defer></script>
+</head>
+<body data-state="/state/sessions/dn-zzzzz" data-version="c1cecbefc8c44ffa">
+<header>
+<nav aria-label="darner">
+<a href="/" class="brand"><img src="/static/dejima-wordmark-darkmode.png" alt="dejima" width="106" height="26"></a>
+<span class="links">
+<a href="/">Sessions</a>
+<a href="/blurbs">Blurbs</a>
+<a href="/configs">Config sets</a>
+<a href="/selftest">Self-test</a>
+</span>
+<a href="/new" class="button new">New<span class="wide"> task</span></a>
+</nav>
+</header>
+<p class="demo-note">A demo of darner, with no model and no sandbox: nothing you type leaves this browser. <a href="https://dejima.page/">dejima.page</a></p>
+<main>
+<div data-view="running">
+
+<h1 class="id">dn-example</h1>
+
+<p class="summary"><span class="id">dn-zzzzz</span>. Started by <strong>web</strong>, 0m ago. <span class="state running">running</span>
+</p>
+
+<p class="untrusted">Everything marked as the agent's was written by the agent. Treat it as untrusted.</p>
+<section class="latest" aria-label="Latest">
+
+<p class="quiet">Nothing yet.</p>
+
+</section>
+
+<section class="panel">
+<form method="post" data-action="/sessions/dn-zzzzz/message">
+<label for="message">Send it a message</label>
+<textarea id="message" name="text" rows="3" required aria-describedby="message-note"></textarea>
+<p class="quiet" id="message-note">What you send is typed into the session and not kept, so it won't appear here.</p>
+<button type="submit">Send</button> <span class="quiet sent" role="status" hidden>Sent.</span>
+</form>
+<form method="post" data-upload="/sessions/dn-zzzzz/files">
+<label for="upload">Put a file in its ~/shared/uploads</label>
+<input id="upload" name="file" type="file" required>
+<button type="submit" class="quiet">Upload</button>
+</form>
+<div class="row"><button type="button" class="quiet" data-post="/sessions/dn-zzzzz/check" title="Look for output, a help request or a domain request now, rather than at the next poll">Check now</button>
+<button type="button" class="refuse" data-post="/sessions/dn-zzzzz/stop" data-confirm="Stop dn-example?" data-busy="Stopping the session">Stop the session</button></div>
+<p class="status" role="status" hidden data-text="dejima is stopping the sandbox, and darner is collecting any output it left. This page reloads when that's done."></p>
+<p class="alert" role="alert" hidden></p>
+</section>
+
+<section class="well started">
+<h2>Started with</h2>
+<dl>
+
+
+<dt>Config sets</dt><dd>recipe-service</dd>
+
+
+<dt>Blurbs</dt><dd>recipe-service, search</dd>
+
+
+<dt>Harness</dt><dd>cline</dd>
+
+
+<dt>Backend</dt><dd>self-hosted</dd>
+
+
+<dt>Model</dt><dd>qwen3.5-4b</dd>
+
+
+<dt>Effort</dt><dd>high</dd>
+
+
+<dt>Context window</dt><dd>120000</dd>
+
+
+<dt>Domains</dt><dd>pypi.org, recipes.example.com</dd>
+
+
+<dt>Internal domains</dt><dd>recipes.example.com</dd>
+
+
+<dt>Dependencies</dt><dd>pip:requests</dd>
+
+
+<dt>Files</dt><dd>recipe-service-api-token, add_recipe.py</dd>
+
+</dl>
+</section>
+
+
+
+
+</div>
+<div data-view="running-output">
+
+<h1 class="id">dn-example</h1>
+
+<p class="summary"><span class="id">dn-zzzzz</span>. Started by <strong>web</strong>, 0m ago. <span class="state running">running</span>
+</p>
+
+<p class="untrusted">Everything marked as the agent's was written by the agent. Treat it as untrusted.</p>
+<section class="latest" aria-label="Latest">
+
+<div class="event output">
+<h2>Output <span class="by">the agent's</span></h2>
+
+<div class="body agent"><p>This is a demo of darner, and there's no model on the other end. No sandbox was started, and nothing you typed left your browser.</p>
+<p>On a real darner, your task would now be running as an isolated dejima (<a href="https://dejima.page" rel="noopener noreferrer">https://dejima.page</a>) session on the dejima host, with the settings you chose. Its page would show its output once the agent wrote <code>~/shared/RESULT.md</code> and signalled it was done, with everything else it left in <code>~/shared</code> as a zip. Until then, you could send it a message, upload a file into its <code>~/shared/uploads</code>, and allow or deny the domains it asks for.</p>
+<p>This output came the way a real session's does: from the stub launcher this demo was built with, through darner's API, cleaned and shown as text written by an agent, which is why it's labelled as the agent's. <strong>Self-test</strong> sends text written like a hostile agent's down the same path, to show what this page does with it.</p>
+</div>
+<div class="footer"><a href="/sessions/dn-zzzzz/outputs/1.zip" class="button quiet" download>Download the zip</a> <span class="quiet">610 bytes</span></div>
+</div>
+
+</section>
+
+<section class="panel">
+<form method="post" data-action="/sessions/dn-zzzzz/message">
+<label for="message">Send it a message</label>
+<textarea id="message" name="text" rows="3" required aria-describedby="message-note"></textarea>
+<p class="quiet" id="message-note">What you send is typed into the session and not kept, so it won't appear here.</p>
+<button type="submit">Send</button> <span class="quiet sent" role="status" hidden>Sent.</span>
+</form>
+<form method="post" data-upload="/sessions/dn-zzzzz/files">
+<label for="upload">Put a file in its ~/shared/uploads</label>
+<input id="upload" name="file" type="file" required>
+<button type="submit" class="quiet">Upload</button>
+</form>
+<div class="row"><button type="button" class="quiet" data-post="/sessions/dn-zzzzz/check" title="Look for output, a help request or a domain request now, rather than at the next poll">Check now</button>
+<button type="button" class="refuse" data-post="/sessions/dn-zzzzz/stop" data-confirm="Stop dn-example?" data-busy="Stopping the session">Stop the session</button></div>
+<p class="status" role="status" hidden data-text="dejima is stopping the sandbox, and darner is collecting any output it left. This page reloads when that's done."></p>
+<p class="alert" role="alert" hidden></p>
+</section>
+
+<section class="well started">
+<h2>Started with</h2>
+<dl>
+
+
+<dt>Config sets</dt><dd>recipe-service</dd>
+
+
+<dt>Blurbs</dt><dd>recipe-service, search</dd>
+
+
+<dt>Harness</dt><dd>cline</dd>
+
+
+<dt>Backend</dt><dd>self-hosted</dd>
+
+
+<dt>Model</dt><dd>qwen3.5-4b</dd>
+
+
+<dt>Effort</dt><dd>high</dd>
+
+
+<dt>Context window</dt><dd>120000</dd>
+
+
+<dt>Domains</dt><dd>pypi.org, recipes.example.com</dd>
+
+
+<dt>Internal domains</dt><dd>recipes.example.com</dd>
+
+
+<dt>Dependencies</dt><dd>pip:requests</dd>
+
+
+<dt>Files</dt><dd>recipe-service-api-token, add_recipe.py</dd>
+
+</dl>
+</section>
+
+
+
+
+</div>
+<div data-view="ended">
+
+<h1 class="id">dn-zzzzz</h1>
+
+<p class="summary">Ended. Its output is kept here until it's cleared. Its ~/shared is kept on the dejima host too, since it holds files the zip doesn't.</p>
+
+<p class="untrusted">Everything marked as the agent's was written by the agent. Treat it as untrusted.</p>
+<section class="latest" aria-label="Latest">
+
+<div class="event ended">
+<h2>Ended</h2>
+</div>
+
+</section>
+
+<section class="panel">
+<div class="row"><button type="button" class="refuse" data-post="/sessions/dn-zzzzz/clear" data-confirm="Clear dn-zzzzz? Its output, zips and ~/shared on the dejima host are deleted.">Clear it</button>
+<span class="quiet">Its output, zips and ~/shared on the dejima host are deleted when it's cleared.</span></div>
+<p class="alert" role="alert" hidden></p>
+</section>
+
+
+
+</div>
+<div data-view="ended-output">
+
+<h1 class="id">dn-zzzzz</h1>
+
+<p class="summary">Ended. Its output is kept here until it's cleared. Its ~/shared on the dejima host was removed, since everything in it is in the zip.</p>
+
+<p class="untrusted">Everything marked as the agent's was written by the agent. Treat it as untrusted.</p>
+<section class="latest" aria-label="Latest">
+
+<div class="event output">
+<h2>Output <span class="by">the agent's</span></h2>
+
+<div class="body agent"><p>This is a demo of darner, and there's no model on the other end. No sandbox was started, and nothing you typed left your browser.</p>
+<p>On a real darner, your task would now be running as an isolated dejima (<a href="https://dejima.page" rel="noopener noreferrer">https://dejima.page</a>) session on the dejima host, with the settings you chose. Its page would show its output once the agent wrote <code>~/shared/RESULT.md</code> and signalled it was done, with everything else it left in <code>~/shared</code> as a zip. Until then, you could send it a message, upload a file into its <code>~/shared/uploads</code>, and allow or deny the domains it asks for.</p>
+<p>This output came the way a real session's does: from the stub launcher this demo was built with, through darner's API, cleaned and shown as text written by an agent, which is why it's labelled as the agent's. <strong>Self-test</strong> sends text written like a hostile agent's down the same path, to show what this page does with it.</p>
+</div>
+<div class="footer"><a href="/sessions/dn-zzzzz/outputs/1.zip" class="button quiet" download>Download the zip</a> <span class="quiet">610 bytes</span></div>
+</div>
+
+</section>
+
+<section class="panel">
+<div class="row"><button type="button" class="refuse" data-post="/sessions/dn-zzzzz/clear" data-confirm="Clear dn-zzzzz? Its output, zips and ~/shared on the dejima host are deleted.">Clear it</button>
+<span class="quiet">Its output, zips and ~/shared on the dejima host are deleted when it's cleared.</span></div>
+<p class="alert" role="alert" hidden></p>
+</section>
+
+
+<section class="history">
+<div class="history-head"><h2>History</h2><button type="button" class="quiet" data-expand="#history">Expand all</button></div>
+<ol class="timeline" id="history">
+
+<li><details class="event ended" data-seq="3"><summary>
+<h2>Ended</h2>
+<span class="when">0m ago</span></summary></details></li>
+
+</ol>
+</section>
+
+
+</div>
+<div data-view="selftest-session">
+
+<h1 class="id">dn-zzzzz</h1>
+
+<p class="summary">Ended. Its output is kept here until it's cleared.</p>
+
+<p class="untrusted">Everything marked as the agent's was written by the agent. Treat it as untrusted.</p>
+<section class="latest" aria-label="Latest">
+
+<div class="event waiting">
+<h2>Seems to be waiting: its screen hasn't changed for 5m <span class="by">the end of its screen, the agent's</span></h2>
+
+<pre class="agent">Frontend self-test. This isn&#39;t an agent: it&#39;s text written like a hostile agent&#39;s, to check that this frontend shows it safely. Each check says what you see if it&#39;s safe (PASS) and what you see if it isn&#39;t (FAIL), then gives its test line. The checks describe markup in words, so they read the same however the test lines come out.
+
+Check 1, raw HTML. PASS: test line 1 shows b tags, in angle brackets, around its words. FAIL: no angle brackets show, and the words are bold.
+
+Test line 1: &lt;b&gt;these words must not be bold&lt;/b&gt;
+
+Check 2, scripts. PASS: test line 2 shows script and img tags, in angle brackets, and no dialog or picture appears. FAIL: the line is empty or missing its tags, a dialog pops up, or a picture or broken-image icon appears.
+
+Test line 2: &lt;script&gt;alert(&#34;selftest&#34;)&lt;/script&gt; &lt;img src=&#34;https://pixel.selftest.invalid/x.png&#34; onerror=&#34;alert(&#39;selftest&#39;)&#34;&gt;
+
+Check 3, HTML links. PASS: test line 3 shows an a href tag, in angle brackets, with evil.selftest.invalid in it. FAIL: it shows only the words &#34;click here&#34;, as a link.
+
+Test line 3: &lt;a href=&#34;https://evil.selftest.invalid&#34;&gt;click here&lt;/a&gt;
+
+Check 4, markdown links. PASS: test line 4 shows evil.selftest.invalid. FAIL: it shows only the words &#34;click here&#34;, as a link.
+
+Test line 4: [click here](https://evil.selftest.invalid)
+
+Check 5, markdown images. PASS: test line 5 shows pixel.selftest.invalid, and no picture or broken-image icon. FAIL: a picture or icon appears, or the address doesn&#39;t.
+
+Test line 5: ![a picture](https://pixel.selftest.invalid/x.png)
+
+Check 6, mentions. PASS: nobody gets a notification, and nothing on test line 6 becomes a highlighted name or pill. FAIL: anyone is notified, or anything on it is highlighted.
+
+Test line 6: @room @here @channel @everyone &lt;!here&gt; &lt;!channel&gt; &lt;@U0SELFTEST&gt; @selftest:selftest.invalid
+
+Check 7, Slack links. PASS: test line 7 shows evil.selftest.invalid. FAIL: it shows only the words &#34;click here&#34;, as a link.
+
+Test line 7: &lt;https://evil.selftest.invalid|click here&gt;
+
+Check 8, invisible characters. PASS: test line 8 ends with abc, in that order, with nothing between the letters. FAIL: the letters are in another order, such as cba, or something shows between them.
+
+Test line 8: abc
+
+Check 9, long addresses. PASS: test line 9 shows the whole of its link&#39;s address, ending in evil.selftest.invalid/x, wrapped if it must be, without scrolling sideways. FAIL: the address is cut off before evil.selftest.invalid, or only docs.selftest.invalid shows.
+
+Test line 9: [https://docs.selftest.invalid/](https://docs.selftest.invalid.mirrorcdndownload0123456789abcdefghijklmnopqrstuvwxyz0123456789.evil.selftest.invalid/x)
+
+Check 10, code fences. PASS: check 11 appears in this same message, after test line 10. FAIL: the message ends at test line 10, or check 11 appears outside it.
+
+Test line 10:
+```
+Check 11, the end. PASS: you can read this line. FAIL: this line is missing, so the message was cut short.</pre>
+</div>
+
+</section>
+
+<section class="panel">
+<div class="row"><button type="button" class="refuse" data-post="/sessions/dn-zzzzz/clear" data-confirm="Clear dn-zzzzz? Its output, zips and ~/shared on the dejima host are deleted.">Clear it</button>
+<span class="quiet">Its output, zips and ~/shared on the dejima host are deleted when it's cleared.</span></div>
+<p class="alert" role="alert" hidden></p>
+</section>
+
+
+<section class="history">
+<div class="history-head"><h2>History</h2><button type="button" class="quiet" data-expand="#history">Expand all</button></div>
+<ol class="timeline" id="history">
+
+<li><details class="event ended" data-seq="7"><summary>
+<h2>Ended</h2>
+<span class="when">0m ago</span></summary></details></li>
+
+<li><details class="event help" data-seq="5"><summary>
+<h2>Help request <span class="by">the agent's</span></h2>
+<span class="when">0m ago</span></summary>
+<div class="body agent"><p>Frontend self-test. This isn't an agent: it's text written like a hostile agent's, to check that this frontend shows it safely. Each check says what you see if it's safe (PASS) and what you see if it isn't (FAIL), then gives its test line. The checks describe markup in words, so they read the same however the test lines come out.</p>
+<p>Check 1, raw HTML. PASS: test line 1 shows b tags, in angle brackets, around its words. FAIL: no angle brackets show, and the words are bold.</p>
+<p>Test line 1: &lt;b&gt;these words must not be bold&lt;/b&gt;</p>
+<p>Check 2, scripts. PASS: test line 2 shows script and img tags, in angle brackets, and no dialog or picture appears. FAIL: the line is empty or missing its tags, a dialog pops up, or a picture or broken-image icon appears.</p>
+<p>Test line 2: &lt;script&gt;alert(&quot;selftest&quot;)&lt;/script&gt; &lt;img src=&quot;https://pixel.selftest.invalid/x.png&quot; onerror=&quot;alert('selftest')&quot;&gt;</p>
+<p>Check 3, HTML links. PASS: test line 3 shows an a href tag, in angle brackets, with evil.selftest.invalid in it. FAIL: it shows only the words &quot;click here&quot;, as a link.</p>
+<p>Test line 3: &lt;a href=&quot;https://evil.selftest.invalid&quot;&gt;click here&lt;/a&gt;</p>
+<p>Check 4, markdown links. PASS: test line 4 shows evil.selftest.invalid. FAIL: it shows only the words &quot;click here&quot;, as a link.</p>
+<p>Test line 4: click here (<a href="https://evil.selftest.invalid" rel="noopener noreferrer">https://evil.selftest.invalid</a>)</p>
+<p>Check 5, markdown images. PASS: test line 5 shows pixel.selftest.invalid, and no picture or broken-image icon. FAIL: a picture or icon appears, or the address doesn't.</p>
+<p>Test line 5: a picture (https://pixel.selftest.invalid/x.png)</p>
+<p>Check 6, mentions. PASS: nobody gets a notification, and nothing on test line 6 becomes a highlighted name or pill. FAIL: anyone is notified, or anything on it is highlighted.</p>
+<p>Test line 6: @room @here @channel @everyone &lt;!here&gt; &lt;!channel&gt; &lt;@U0SELFTEST&gt; @selftest:selftest.invalid</p>
+<p>Check 7, Slack links. PASS: test line 7 shows evil.selftest.invalid. FAIL: it shows only the words &quot;click here&quot;, as a link.</p>
+<p>Test line 7: &lt;https://evil.selftest.invalid|click here&gt;</p>
+<p>Check 8, invisible characters. PASS: test line 8 ends with abc, in that order, with nothing between the letters. FAIL: the letters are in another order, such as cba, or something shows between them.</p>
+<p>Test line 8: abc</p>
+<p>Check 9, long addresses. PASS: test line 9 shows the whole of its link's address, ending in evil.selftest.invalid/x, wrapped if it must be, without scrolling sideways. FAIL: the address is cut off before evil.selftest.invalid, or only docs.selftest.invalid shows.</p>
+<p>Test line 9: https://docs.selftest.invalid/ (<a href="https://docs.selftest.invalid.mirrorcdndownload0123456789abcdefghijklmnopqrstuvwxyz0123456789.evil.selftest.invalid/x" rel="noopener noreferrer">https://docs.selftest.invalid.mirrorcdndownload0123456789abcdefghijklmnopqrstuvwxyz0123456789.evil.selftest.invalid/x</a>)</p>
+<p>Check 10, code fences. PASS: check 11 appears in this same message, after test line 10. FAIL: the message ends at test line 10, or check 11 appears outside it.</p>
+<p>Test line 10:</p>
+<pre><code>Check 11, the end. PASS: you can read this line. FAIL: this line is missing, so the message was cut short.</code></pre>
+</div>
+</details></li>
+
+<li><details class="event output" data-seq="4"><summary>
+<h2>Output <span class="by">the agent's</span></h2>
+<span class="when">0m ago</span></summary>
+<div class="body agent"><p>Frontend self-test. This isn't an agent: it's text written like a hostile agent's, to check that this frontend shows it safely. Each check says what you see if it's safe (PASS) and what you see if it isn't (FAIL), then gives its test line. The checks describe markup in words, so they read the same however the test lines come out.</p>
+<p>Check 1, raw HTML. PASS: test line 1 shows b tags, in angle brackets, around its words. FAIL: no angle brackets show, and the words are bold.</p>
+<p>Test line 1: &lt;b&gt;these words must not be bold&lt;/b&gt;</p>
+<p>Check 2, scripts. PASS: test line 2 shows script and img tags, in angle brackets, and no dialog or picture appears. FAIL: the line is empty or missing its tags, a dialog pops up, or a picture or broken-image icon appears.</p>
+<p>Test line 2: &lt;script&gt;alert(&quot;selftest&quot;)&lt;/script&gt; &lt;img src=&quot;https://pixel.selftest.invalid/x.png&quot; onerror=&quot;alert('selftest')&quot;&gt;</p>
+<p>Check 3, HTML links. PASS: test line 3 shows an a href tag, in angle brackets, with evil.selftest.invalid in it. FAIL: it shows only the words &quot;click here&quot;, as a link.</p>
+<p>Test line 3: &lt;a href=&quot;https://evil.selftest.invalid&quot;&gt;click here&lt;/a&gt;</p>
+<p>Check 4, markdown links. PASS: test line 4 shows evil.selftest.invalid. FAIL: it shows only the words &quot;click here&quot;, as a link.</p>
+<p>Test line 4: click here (<a href="https://evil.selftest.invalid" rel="noopener noreferrer">https://evil.selftest.invalid</a>)</p>
+<p>Check 5, markdown images. PASS: test line 5 shows pixel.selftest.invalid, and no picture or broken-image icon. FAIL: a picture or icon appears, or the address doesn't.</p>
+<p>Test line 5: a picture (https://pixel.selftest.invalid/x.png)</p>
+<p>Check 6, mentions. PASS: nobody gets a notification, and nothing on test line 6 becomes a highlighted name or pill. FAIL: anyone is notified, or anything on it is highlighted.</p>
+<p>Test line 6: @room @here @channel @everyone &lt;!here&gt; &lt;!channel&gt; &lt;@U0SELFTEST&gt; @selftest:selftest.invalid</p>
+<p>Check 7, Slack links. PASS: test line 7 shows evil.selftest.invalid. FAIL: it shows only the words &quot;click here&quot;, as a link.</p>
+<p>Test line 7: &lt;https://evil.selftest.invalid|click here&gt;</p>
+<p>Check 8, invisible characters. PASS: test line 8 ends with abc, in that order, with nothing between the letters. FAIL: the letters are in another order, such as cba, or something shows between them.</p>
+<p>Test line 8: abc</p>
+<p>Check 9, long addresses. PASS: test line 9 shows the whole of its link's address, ending in evil.selftest.invalid/x, wrapped if it must be, without scrolling sideways. FAIL: the address is cut off before evil.selftest.invalid, or only docs.selftest.invalid shows.</p>
+<p>Test line 9: https://docs.selftest.invalid/ (<a href="https://docs.selftest.invalid.mirrorcdndownload0123456789abcdefghijklmnopqrstuvwxyz0123456789.evil.selftest.invalid/x" rel="noopener noreferrer">https://docs.selftest.invalid.mirrorcdndownload0123456789abcdefghijklmnopqrstuvwxyz0123456789.evil.selftest.invalid/x</a>)</p>
+<p>Check 10, code fences. PASS: check 11 appears in this same message, after test line 10. FAIL: the message ends at test line 10, or check 11 appears outside it.</p>
+<p>Test line 10:</p>
+<pre><code>Check 11, the end. PASS: you can read this line. FAIL: this line is missing, so the message was cut short.</code></pre>
+</div>
+
+</details></li>
+
+</ol>
+</section>
+
+
+</div>
+<div data-view="gone">
+
+<h1 class="id">dn-zzzzz</h1>
+<p class="lead">This session has ended and been cleared, or never existed here. darner keeps nothing about a session once it's cleared.</p>
+<p><a href="/" class="button quiet">Back to sessions</a></p>
+
+</div>
+</main>
+</body>
+</html>

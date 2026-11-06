@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>darner</title>
+<link rel="icon" href="/static/favicon.png">
+<link rel="stylesheet" href="/static/app.css">
+<link rel="stylesheet" href="/demo/demo.css">
+<script type="application/json" id="demo-data">{"id":"dn-zzzzz","name":"example","labels":{"configs":"Config sets","blurbs":"Blurbs","harness":"Harness","backend":"Backend","model":"Model","effort":"Effort","context_window":"Context window","network":"Reach","domains":"Domains","internal_domains":"Internal domains","dependencies":"Dependencies","files":"Files"},"started_with":["configs","blurbs","harness","backend","model","effort","context_window","network","domains","internal_domains","dependencies","files"],"singles":["harness","backend","model","effort","context_window","network"],"sets":{"":{"sets":{"blurbs":[],"domains":[],"internal":[],"dependencies":[],"files":[],"harness":null,"backend":null,"model":null,"effort":null,"context_window":null,"network":null},"conflicts":[]},"local":{"sets":{"blurbs":["search"],"domains":[],"internal":[],"dependencies":[],"files":[],"harness":"cline","backend":"self-hosted","model":"qwen3.5-4b","effort":null,"context_window":"120000","network":null},"conflicts":[]},"recipe-service":{"sets":{"blurbs":["recipe-service"],"domains":[],"internal":["recipes.example.com:8443"],"dependencies":[],"files":["recipe-service-api-token","add_recipe.py"],"harness":"cline","backend":"self-hosted","model":"qwen3.5-4b","effort":null,"context_window":"120000","network":null},"conflicts":[]},"sealed":{"sets":{"blurbs":[],"domains":[],"internal":[],"dependencies":[],"files":[],"harness":"cline","backend":"self-hosted","model":"qwen3.5-4b","effort":null,"context_window":"120000","network":"sealed"},"conflicts":[]},"local,recipe-service":{"sets":{"blurbs":["search","recipe-service"],"domains":[],"internal":["recipes.example.com:8443"],"dependencies":[],"files":["recipe-service-api-token","add_recipe.py"],"harness":"cline","backend":"self-hosted","model":"qwen3.5-4b","effort":null,"context_window":"120000","network":null},"conflicts":[]},"local,sealed":{"sets":{"blurbs":["search"],"domains":[],"internal":[],"dependencies":[],"files":[],"harness":"cline","backend":"self-hosted","model":"qwen3.5-4b","effort":null,"context_window":"120000","network":"sealed"},"conflicts":[]},"recipe-service,sealed":{"sets":{"blurbs":["recipe-service"],"domains":[],"internal":["recipes.example.com:8443"],"dependencies":[],"files":["recipe-service-api-token","add_recipe.py"],"harness":"cline","backend":"self-hosted","model":"qwen3.5-4b","effort":null,"context_window":"120000","network":"sealed"},"conflicts":[]},"local,recipe-service,sealed":{"sets":{"blurbs":["search","recipe-service"],"domains":[],"internal":["recipes.example.com:8443"],"dependencies":[],"files":["recipe-service-api-token","add_recipe.py"],"harness":"cline","backend":"self-hosted","model":"qwen3.5-4b","effort":null,"context_window":"120000","network":"sealed"},"conflicts":[]}},"blurbs":{"recipe-service":"- Server: `https://recipes.example.com:8443` (recipe-service v1.1). **Port 8443, not 443**: port 443 times out.\n- Auth: `Authorization: Bearer \u003ctoken>`. The token is in the `recipe-service-api-token` file at `/home/user/shared/uploads/recipe-service-api-token`. Never print it or commit it.\n- To add a recipe from a URL, use `add_recipe.py URL` (`--dry-run` first) in `/home/user/shared/uploads/add_recipe.py`. It checks for duplicates, imports, and parses ingredients, matching them to existing foods and units.\n    - You can use this as an example to build off if doing something else on the server.\n- If the expected filea aren't in `/home/user/shared/uploads`, stop and tell the user.\n- Recipe page: `https://recipes.example.com:8443/g/home/r/\u003cslug>`\n- When adding or modifying recipes in the server, remember to parse the ingredients and amounts into recipe-service's internal objects, rather than raw strings. Use existing ingredients and amounts in the recipe-service instance where possible, rather than creating new ones.\n\nAPI, if doing it by hand:\n- The API docs are at https://recipes.example.com:8443/docs.\n- Duplicate check: `GET /api/recipes?perPage=-1`, then compare `orgURL` with the source URL. `?search=` is fuzzy and unreliable.\n- Import: `POST /api/recipes/create/url` with `{\"url\": ..., \"includeTags\": true}`. It returns the slug as a JSON string with quotes.\n- Imported ingredients are raw text (`food: null`, with the text in `note`). They must be parsed afterwards.\n- Parse: `POST /api/parser/ingredients` with `{\"strategy\": \"nlp\", \"ingredients\": [lines]}`.\n  - A food or unit **without an `id`** is the parser proposing a new one. Map it to an existing item instead (`GET /api/foods?perPage=-1`, `GET /api/units?perPage=-1`). For example, \"ripe bananas\" becomes food `banana` with note `ripe`.\n  - The parser sometimes drops words (e.g. \"mini\" in \"mini chocolate chips\") and rounds 1/3 to 0.333. Compare each result with the input line.\n- Save: `PATCH /api/recipes/\u003cslug>` with `{\"recipeIngredient\": [...]}`. Keep each item's `referenceId`, and set `originalText` to the source line.\n- Verify: `GET /api/recipes/\u003cslug>` and check each ingredient's `display`.\n- Imports often leave `recipeYield` empty and add \"Recipe by \u003csite>\" to the name. Fix these with a `PATCH` if wanted.\n\n","search":"- you can perform web searches using my searxng instance at search.example.com\n"},"session_name":"[a-z0-9][a-z0-9-]{0,31}","name_rule":"a session name is up to 32 lowercase letters, digits and hyphens, not shaped like a session id","domain":"[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+","dependency":"(apt|pip|cargo):[A-Za-z0-9][A-Za-z0-9._+-]*|npm:(@[A-Za-z0-9][A-Za-z0-9._-]*/)?[A-Za-z0-9][A-Za-z0-9._-]*(@[A-Za-z0-9][A-Za-z0-9._-]*)?","tarball":"tarball:([A-Za-z0-9][A-Za-z0-9._-]*)@[a-f0-9]{64}:(https://[A-Za-z0-9._~/?=+%-]{1,504})","effort":"[a-z][a-z0-9]{0,31}","context_window":[512,100000000],"networks":["named","sealed"],"max_grants":64,"dependency_kinds":["apt","cargo","npm","pip"],"catalog":{"harnesses":["claude-code","cline"],"backends":["anthropic","anthropic-api-key","openrouter","self-hosted"],"default_harness":"claude-code","defaults":{"claude-code":{"backend":"anthropic","model":"claude-opus-5-5"}},"options":{"claude-code":{"backends":["anthropic","anthropic-api-key"],"efforts":["low","medium","high","xhigh"],"context_window":false},"cline":{"backends":["anthropic","anthropic-api-key","openrouter","self-hosted"],"efforts":["none","low","medium","high","xhigh"],"context_window":true}}}}</script>
+<script type="module" src="/demo/demo.js"></script>
+<script src="/static/app.js" defer></script>
+</head>
+<body>
+<header>
+<nav aria-label="darner">
+<a href="/" class="brand"><img src="/static/dejima-wordmark-darkmode.png" alt="dejima" width="106" height="26"></a>
+<span class="links">
+<a href="/">Sessions</a>
+<a href="/blurbs">Blurbs</a>
+<a href="/configs">Config sets</a>
+<a href="/selftest">Self-test</a>
+</span>
+<a href="/new" class="button new">New<span class="wide"> task</span></a>
+</nav>
+</header>
+<p class="demo-note">A demo of darner, with no model and no sandbox: nothing you type leaves this browser. <a href="https://dejima.page/">dejima.page</a></p>
+<main>
+
+<h1>Context blurbs</h1>
+
+<ul class="names">
+<li><a href="/blurbs/recipe-service">recipe-service</a></li><li><a href="/blurbs/search">search</a></li>
+</ul>
+
+
+</main>
+</body>
+</html>

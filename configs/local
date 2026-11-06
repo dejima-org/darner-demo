@@ -1,0 +1,6 @@
+# Self-hosted Cline session
+blurb: search
+harness: cline
+backend: self-hosted
+model: qwen3.5-4b
+context_window: 120000
