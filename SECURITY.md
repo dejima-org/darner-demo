@@ -8,9 +8,9 @@ The pages are darner-web's, captured from darner itself, and are served with dar
 
 ## Reporting a vulnerability
 
-Email **report@dejima.page**. Please don't open a public issue for a vulnerability; a report there is a disclosure. A flaw in what darner-web renders is darner's: see [darner's SECURITY.md](https://gitbox.branderson.io/dejima/darner/src/branch/main/SECURITY.md).
+Email **report@dejima.page**. Please don't open a public issue for a vulnerability; a report there is a disclosure. A flaw in what darner-web renders is darner's: see [darner's SECURITY.md](https://github.com/dejima-org/darner/blob/main/SECURITY.md).
 
-The organisation-wide policy, including what you can expect in return, is [dejima's SECURITY.md](https://gitbox.branderson.io/dejima/dejima/src/branch/main/SECURITY.md). Only what's served from `main` is supported, and nothing is promised.
+The organisation-wide policy, including what you can expect in return, is [dejima's SECURITY.md](https://github.com/dejima-org/dejima/blob/main/SECURITY.md). Only what's served from `main` is supported, and nothing is promised.
 
 ## No warranty
 
