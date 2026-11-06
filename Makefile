@@ -11,7 +11,7 @@ build:
 	mkdir -p public/demo
 	cp src/demo.js src/model.js src/demo.css public/demo/
 
-# Every local file a page references has to be in the build.
+# Every local file a page references has to be in the build, and each font's licence.
 check: build
 	@missing=0; \
 	for page in $$(find public -name '*.html'); do \
@@ -19,6 +19,9 @@ check: build
 			case "$$ref" in sessions/*) continue ;; esac; \
 			[ -e "public/$$ref" ] || [ -e "public/$$ref.html" ] || [ "$$ref" = "" ] || { echo "$$page: missing from the build: /$$ref"; missing=1; }; \
 		done; \
+	done; \
+	for font in jost ibm-plex-serif jetbrains-mono; do \
+		[ -e "public/static/fonts/LICENSE-$$font.txt" ] || { echo "missing from the build: the licence for $$font, which the OFL asks to travel with it"; missing=1; }; \
 	done; \
 	exit $$missing
 
