@@ -18,17 +18,23 @@
      inline and indents the image by one space. -->
 &nbsp;
 
-&nbsp;<img src="assets/dejima-wordmark-darkmode.png" alt="dejima" height="72">
+&nbsp;<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dejima-wordmark-darkmode.png"><img src="assets/dejima-wordmark-lightmode.png" alt="dejima" height="72"></picture>
 
 ---
+
+> **This is a read-only mirror.** Development happens on the forge its
+> maintainer runs, which takes no accounts, issues or pull requests;
+> [this repository](https://gitbox.branderson.io/dejima/darner-demo) is
+> public to read there. Issues and pull requests are off here too. See
+> [CONTRIBUTING.md](https://github.com/dejima-org/dejima/blob/main/CONTRIBUTING.md).
 
 &nbsp;
 
 # darner-demo
 
-A demo of [darner](https://gitbox.branderson.io/dejima/darner)'s browser frontend, darner-web, as a static site. Start a task with the example config sets and blurbs, watch its session run and deliver output, message it, stop it and clear it, or run the self-test. There's no model and no sandbox behind it: the visitor's sessions live in their browser's localStorage, and nothing they type is sent anywhere.
+A demo of [darner](https://github.com/dejima-org/darner)'s browser frontend, darner-web, as a static site. Start a task with the example config sets and blurbs, watch its session run and deliver output, message it, stop it and clear it, or run the self-test. There's no model and no sandbox behind it: the visitor's sessions live in their browser's localStorage, and nothing they type is sent anywhere.
 
-[![Developed in dejima](assets/dejima-badge.svg)](https://gitbox.branderson.io/dejima/dejima)
+[![Developed in dejima](assets/dejima-badge.svg)](https://github.com/dejima-org/dejima)
 
 **→ [SECURITY.md](SECURITY.md)**: what the demo does and doesn't do with what a visitor types, and how to report a vulnerability.
 
@@ -67,7 +73,7 @@ Like `app.js`, it sets text and never inserts HTML, so darner-web's CSP holds un
 
 GPL-3.0-or-later, as darner, whose templates, script and styles the pages are. Serving them conveys that code to each visitor, so every page links this repository's public copy. `site/static/` is darner-web's: its README says what is and isn't covered.
 
-The dejima wordmark and logo are not code and are not covered by that licence. They are trademarks; who holds them and what may be done with them is stated once for the organisation, at [dejima's ATTRIBUTION.md](https://gitbox.branderson.io/dejima/dejima/src/branch/main/ATTRIBUTION.md).
+The dejima wordmark and logo are not code and are not covered by that licence. They are trademarks; who holds them and what may be done with them is stated once for the organisation, at [dejima's ATTRIBUTION.md](https://github.com/dejima-org/dejima/blob/main/ATTRIBUTION.md).
 
 The fonts in `site/static/fonts/` are under the SIL Open Font License, each with its licence beside it, and `make check` fails if one is missing from the build.
 
@@ -112,7 +118,7 @@ install -d -o site-deploy -g site-deploy -m 755 /srv/www/darner-demo.dejima.page
 # clone's .git/config. Needs git 2.31+.
 export GIT_AUTH="Authorization: token $(cat /etc/site-deploy/token)"
 git --config-env=http.extraHeader=GIT_AUTH clone --depth 1 --filter=blob:none --sparse \
-    https://gitbox.branderson.io/dejima/darner-demo.git /usr/local/src/dejima-darner-demo
+    https://github.com/dejima-org/darner-demo.git /usr/local/src/dejima-darner-demo
 git --config-env=http.extraHeader=GIT_AUTH -C /usr/local/src/dejima-darner-demo sparse-checkout set deploy
 unset GIT_AUTH
 cd /usr/local/src/dejima-darner-demo
